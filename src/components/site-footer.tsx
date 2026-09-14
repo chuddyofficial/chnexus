@@ -67,16 +67,6 @@ export function SiteFooter() {
                   Hosting Panel ↗
                 </a>
               </li>
-              <li>
-                <a
-                  href={SERVICE_LINKS.mabu}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-foreground"
-                >
-                  MABU ↗
-                </a>
-              </li>
             </ul>
           </div>
 
