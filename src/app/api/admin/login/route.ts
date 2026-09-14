@@ -30,7 +30,11 @@ export async function POST(req: NextRequest) {
 
   const ipHash = hashIp(ip, process.env.IP_HASH_SALT ?? "");
 
-  if (!admin || !(await verifyPassword(password, admin.passwordHash))) {
+  if (
+    !admin ||
+    !admin.active ||
+    !(await verifyPassword(password, admin.passwordHash))
+  ) {
     if (admin) {
       await prisma.auditLog.create({
         data: { action: "LOGIN_FAILURE", adminUserId: admin.id, ipHash },

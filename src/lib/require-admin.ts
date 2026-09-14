@@ -14,3 +14,17 @@ export async function requireAdmin(): Promise<
   }
   return { admin };
 }
+
+export async function requireSuperAdmin(): Promise<
+  { admin: AdminUser } | { error: NextResponse }
+> {
+  const check = await requireAdmin();
+  if ("error" in check) return check;
+
+  if (check.admin.role !== "SUPERADMIN") {
+    return {
+      error: NextResponse.json({ error: "Forbidden." }, { status: 403 }),
+    };
+  }
+  return check;
+}

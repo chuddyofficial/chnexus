@@ -102,6 +102,11 @@ npm run dev
 - `/admin/submissions` — contact form inbox
 - `/admin/announcements` — site-wide banner messages
 - `/admin/settings` — override service URLs and the homepage tagline without redeploying
+- `/admin/admins` — **superadmin only**: create/deactivate admin accounts, reset another admin's MFA
+- `/admin/audit-log` — **superadmin only**: the last 200 recorded admin actions (logins, MFA resets, setting changes, etc.)
 
-Admin accounts are seeded directly (`npm run db:seed`) — there is no public
-sign-up.
+The first admin account is seeded directly (`npm run db:seed`, or via
+`setup.sh`) as a **superadmin** — there is no public sign-up. Additional
+admin accounts (regular `ADMIN` or another `SUPERADMIN`) are created from
+`/admin/admins` by an existing superadmin, who is shown a one-time TOTP QR
+code for the new account.

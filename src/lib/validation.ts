@@ -29,3 +29,13 @@ export const siteSettingSchema = z.object({
 export const submissionStatusSchema = z.object({
   status: z.enum(["NEW", "READ", "ARCHIVED"]),
 });
+
+export const createAdminSchema = z.object({
+  email: z.string().email().max(200),
+  password: z.string().min(12).max(200),
+  role: z.enum(["ADMIN", "SUPERADMIN"]),
+});
+
+export const resetAdminMfaSchema = z.object({
+  adminId: z.string().min(1),
+});

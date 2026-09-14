@@ -70,7 +70,7 @@ export async function getCurrentAdmin(): Promise<AdminUser | null> {
     include: { admin: true },
   });
 
-  if (!session || session.expires < new Date()) {
+  if (!session || session.expires < new Date() || !session.admin.active) {
     if (session) {
       await prisma.session.delete({ where: { id: session.id } });
     }

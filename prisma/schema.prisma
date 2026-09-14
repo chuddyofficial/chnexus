@@ -17,6 +17,7 @@ model AdminUser {
   email         String    @unique
   passwordHash  String
   role          AdminRole @default(ADMIN)
+  active        Boolean   @default(true)
 
   totpSecret    String?
   totpEnabled   Boolean   @default(false)
@@ -92,6 +93,9 @@ enum AuditAction {
   ANNOUNCEMENT_UPDATED
   ANNOUNCEMENT_DELETED
   SUBMISSION_STATUS_CHANGED
+  ADMIN_CREATED
+  ADMIN_DEACTIVATED
+  ADMIN_MFA_RESET
 }
 
 model AuditLog {

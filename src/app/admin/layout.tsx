@@ -11,6 +11,11 @@ const NAV = [
   { href: "/admin/settings", label: "Site Settings" },
 ];
 
+const SUPERADMIN_NAV = [
+  { href: "/admin/admins", label: "Admins" },
+  { href: "/admin/audit-log", label: "Audit Log" },
+];
+
 export default async function AdminLayout({
   children,
 }: {
@@ -21,6 +26,9 @@ export default async function AdminLayout({
     redirect("/admin/login");
   }
 
+  const navItems =
+    admin.role === "SUPERADMIN" ? [...NAV, ...SUPERADMIN_NAV] : NAV;
+
   return (
     <div className="mx-auto flex max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:px-8">
       <aside className="hidden w-56 shrink-0 md:block">
@@ -29,7 +37,7 @@ export default async function AdminLayout({
           <span className="text-sm font-semibold">Admin</span>
         </div>
         <nav className="mt-6 space-y-1">
-          {NAV.map((item) => (
+          {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}

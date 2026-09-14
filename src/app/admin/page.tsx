@@ -1,17 +1,26 @@
 import { prisma } from "@/lib/prisma";
+import { getCurrentAdmin } from "@/lib/auth";
 
 export default async function AdminOverviewPage() {
-  const [newSubmissions, activeAnnouncements, totalSubmissions] =
+  const currentAdmin = await getCurrentAdmin();
+
+  const [newSubmissions, activeAnnouncements, totalSubmissions, activeAdmins] =
     await Promise.all([
       prisma.contactSubmission.count({ where: { status: "NEW" } }),
       prisma.announcement.count({ where: { active: true } }),
       prisma.contactSubmission.count(),
+      currentAdmin?.role === "SUPERADMIN"
+        ? prisma.adminUser.count({ where: { active: true } })
+        : Promise.resolve(null),
     ]);
 
   const stats = [
     { label: "New submissions", value: newSubmissions },
     { label: "Active announcements", value: activeAnnouncements },
     { label: "Total submissions", value: totalSubmissions },
+    ...(activeAdmins !== null
+      ? [{ label: "Active admins", value: activeAdmins }]
+      : []),
   ];
 
   return (
