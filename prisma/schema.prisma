@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AdminRole {
+  ADMIN
+  SUPERADMIN
+}
+
+model AdminUser {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  role          AdminRole @default(ADMIN)
+
+  totpSecret    String?
+  totpEnabled   Boolean   @default(false)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime?
+
+  sessions      Session[]
+  auditLogs     AuditLog[]
+}
+
+model Session {
+  id           String    @id @default(cuid())
+  sessionToken String    @unique
+  adminUserId  String
+  admin        AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  expires      DateTime
+
+  @@index([adminUserId])
+}
+
+enum SubmissionStatus {
+  NEW
+  READ
+  ARCHIVED
+}
+
+model ContactSubmission {
+  id        String            @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  status    SubmissionStatus  @default(NEW)
+  ipHash    String?
+  createdAt DateTime          @default(now())
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum AnnouncementLevel {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+model Announcement {
+  id        String            @id @default(cuid())
+  message   String
+  level     AnnouncementLevel @default(INFO)
+  active    Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@index([active])
+}
+
+model SiteSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+enum AuditAction {
+  LOGIN_SUCCESS
+  LOGIN_FAILURE
+  LOGOUT
+  MFA_ENABLED
+  MFA_DISABLED
+  SETTING_UPDATED
+  ANNOUNCEMENT_CREATED
+  ANNOUNCEMENT_UPDATED
+  ANNOUNCEMENT_DELETED
+  SUBMISSION_STATUS_CHANGED
+}
+
+model AuditLog {
+  id          String      @id @default(cuid())
+  action      AuditAction
+  adminUserId String?
+  admin       AdminUser?  @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+  metadata    Json?
+  ipHash      String?
+  createdAt   DateTime    @default(now())
+
+  @@index([adminUserId])
+  @@index([action])
+  @@index([createdAt])
+}
