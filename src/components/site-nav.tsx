@@ -53,14 +53,6 @@ export function SiteNav() {
           >
             Hosting Panel
           </a>
-          <a
-            href={SERVICE_LINKS.mabu}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-md bg-gradient-to-r from-accent to-accent-2 px-3 py-1.5 text-sm font-medium text-white shadow-lg shadow-accent/20 transition-opacity hover:opacity-90"
-          >
-            MABU
-          </a>
         </div>
 
         <button
@@ -108,14 +100,6 @@ export function SiteNav() {
               className="rounded-md border border-border px-3 py-2 text-center text-sm text-foreground/90"
             >
               Hosting Panel
-            </a>
-            <a
-              href={SERVICE_LINKS.mabu}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-md bg-gradient-to-r from-accent to-accent-2 px-3 py-2 text-center text-sm font-medium text-white"
-            >
-              MABU
             </a>
           </div>
         </div>
