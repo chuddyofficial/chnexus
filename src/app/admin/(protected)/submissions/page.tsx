@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { SubmissionRow } from "@/components/admin/submission-row";
+import { SubmissionsList } from "@/components/admin/submissions-list";
 
 export default async function SubmissionsPage() {
   const submissions = await prisma.contactSubmission.findMany({
@@ -14,21 +14,17 @@ export default async function SubmissionsPage() {
         Messages submitted through the public contact form.
       </p>
 
-      <div className="mt-8 space-y-3">
-        {submissions.length === 0 && (
-          <p className="text-sm text-muted">No submissions yet.</p>
-        )}
-        {submissions.map((submission) => (
-          <SubmissionRow
-            key={submission.id}
-            id={submission.id}
-            name={submission.name}
-            email={submission.email}
-            message={submission.message}
-            status={submission.status}
-            createdAt={submission.createdAt.toISOString()}
-          />
-        ))}
+      <div className="mt-8">
+        <SubmissionsList
+          submissions={submissions.map((s) => ({
+            id: s.id,
+            name: s.name,
+            email: s.email,
+            message: s.message,
+            status: s.status,
+            createdAt: s.createdAt.toISOString(),
+          }))}
+        />
       </div>
     </div>
   );

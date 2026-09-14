@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { NexusMark, MabuMark } from "@/components/logos";
-import { getServiceLinks, getHeroTagline } from "@/lib/site-settings";
+import { getServiceLinks, getSiteContent } from "@/lib/site-settings";
 
 const CAPABILITIES = [
   "Community Infrastructure",
@@ -13,30 +13,27 @@ const CAPABILITIES = [
 
 export default async function Home() {
   const links = await getServiceLinks();
-  const tagline = await getHeroTagline();
+  const content = await getSiteContent();
 
   const pillars = [
     {
       mark: <NexusMark className="h-9 w-9" />,
       title: "Nexus Services",
-      description:
-        "Protect and manage your Discord community — AutoMod, anti-raid, moderation, verification, tickets, logging, leveling, and more.",
+      description: content.pillarServicesDescription,
       cta: "Open Services",
       href: links.services,
     },
     {
       icon: "☁️",
       title: "Nexus Hosting",
-      description:
-        "Private infrastructure and hosting built for the Nexus ecosystem, managed through a dedicated control panel.",
+      description: content.pillarHostingDescription,
       cta: "Open Hosting",
       href: links.hosting,
     },
     {
       mark: <MabuMark className="h-9 w-9" />,
       title: "MABU",
-      description:
-        "The CH Nexus cyber security team — protecting the ecosystem behind the scenes. Private access for authorized personnel.",
+      description: content.pillarMabuDescription,
       cta: "Enter MABU",
       href: links.mabu,
     },
@@ -53,16 +50,13 @@ export default async function Home() {
               One ecosystem, four capabilities
             </span>
             <h1 className="mt-6 text-4xl font-bold tracking-tight sm:text-6xl">
-              CH NEXUS
+              {content.heroTitle}
             </h1>
             <p className="mt-6 text-lg text-muted sm:text-xl">
-              {tagline ?? "Security. Infrastructure. Research. Community."}
+              {content.heroTagline}
             </p>
             <p className="mx-auto mt-4 max-w-2xl text-sm text-muted sm:text-base">
-              CH Nexus is a connected technology ecosystem — far more than a
-              single Discord bot. It brings together community protection,
-              private infrastructure, and a dedicated cyber security team under
-              one platform.
+              {content.heroDescription}
             </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
               <a

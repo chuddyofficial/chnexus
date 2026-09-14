@@ -1,11 +1,28 @@
 import type { Metadata } from "next";
-import { SERVICE_LINKS } from "@/lib/links";
 import { MabuMark } from "@/components/logos";
 
 export const metadata: Metadata = {
   title: "MABU — CH Nexus",
   description: "MABU is the CH Nexus cyber security team.",
 };
+
+const AREAS = [
+  {
+    title: "Threat monitoring",
+    description:
+      "Keeping watch over the ecosystem for emerging risks before they become incidents.",
+  },
+  {
+    title: "Incident response",
+    description:
+      "Investigating and responding when something in the ecosystem needs attention.",
+  },
+  {
+    title: "Internal security",
+    description:
+      "Working behind the scenes to keep Nexus infrastructure and services protected.",
+  },
+];
 
 export default function MabuPage() {
   return (
@@ -17,8 +34,8 @@ export default function MabuPage() {
             "radial-gradient(60% 60% at 50% 0%, rgba(53, 217, 217, 0.2), transparent 70%)",
         }}
       />
-      <div className="relative mx-auto flex min-h-[70vh] max-w-2xl flex-col items-center justify-center px-4 py-20 text-center sm:px-6 lg:px-8">
-        <MabuMark className="h-20 w-20" />
+      <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 lg:px-8">
+        <MabuMark className="mx-auto h-20 w-20" />
         <h1 className="mt-6 text-3xl font-bold tracking-tight sm:text-5xl">
           MABU
         </h1>
@@ -26,17 +43,30 @@ export default function MabuPage() {
           MABU is the CH Nexus cyber security team — working behind the
           scenes to protect the ecosystem.
         </p>
-        <p className="mt-2 text-xs text-muted">
-          Access is private and restricted to authorized personnel.
+        <p className="mx-auto mt-4 max-w-xl text-sm text-muted sm:text-base">
+          From infrastructure to community services, MABU helps keep every
+          part of CH Nexus safe, so the rest of the ecosystem can focus on
+          serving the community.
         </p>
-        <a
-          href={SERVICE_LINKS.mabu}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-8 inline-flex items-center gap-2 rounded-md bg-gradient-to-r from-accent-cyan to-accent px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-accent/30 transition-opacity hover:opacity-90"
-        >
-          Sign In →
-        </a>
+      </div>
+
+      <div className="relative mx-auto max-w-5xl px-4 pb-20 sm:px-6 lg:px-8">
+        <div className="grid gap-5 sm:grid-cols-3">
+          {AREAS.map((area) => (
+            <div
+              key={area.title}
+              className="rounded-xl border border-border bg-surface/60 p-6"
+            >
+              <h3 className="font-semibold">{area.title}</h3>
+              <p className="mt-2 text-sm text-muted">{area.description}</p>
+            </div>
+          ))}
+        </div>
+
+        <p className="mx-auto mt-10 max-w-xl text-center text-xs text-muted">
+          MABU operates internally and does not have public-facing tools or
+          services.
+        </p>
       </div>
     </div>
   );
