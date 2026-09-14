@@ -1,23 +1,30 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getCurrentAdmin } from "@/lib/auth";
+import {
+  InboxIcon,
+  MegaphoneIcon,
+  SettingsIcon,
+  ShieldIcon,
+  LogIcon,
+} from "@/components/admin/icons";
 
-const STAT_ICONS: Record<string, string> = {
-  "New submissions": "✉️",
-  "Total submissions": "📥",
-  "Active announcements": "📣",
-  "Active admins": "🛡️",
+const STAT_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  "New submissions": InboxIcon,
+  "Total submissions": InboxIcon,
+  "Active announcements": MegaphoneIcon,
+  "Active admins": ShieldIcon,
 };
 
 const QUICK_LINKS = [
-  { href: "/admin/submissions", label: "Contact Inbox", icon: "✉️" },
-  { href: "/admin/announcements", label: "Announcements", icon: "📣" },
-  { href: "/admin/settings", label: "Site Settings", icon: "⚙️" },
+  { href: "/admin/submissions", label: "Contact Inbox", icon: InboxIcon },
+  { href: "/admin/announcements", label: "Announcements", icon: MegaphoneIcon },
+  { href: "/admin/settings", label: "Site Settings", icon: SettingsIcon },
 ];
 
 const SUPERADMIN_QUICK_LINKS = [
-  { href: "/admin/admins", label: "Admins", icon: "🛡️" },
-  { href: "/admin/audit-log", label: "Audit Log", icon: "🗒️" },
+  { href: "/admin/admins", label: "Admins", icon: ShieldIcon },
+  { href: "/admin/audit-log", label: "Audit Log", icon: LogIcon },
 ];
 
 export default async function AdminOverviewPage() {
@@ -71,20 +78,21 @@ export default async function AdminOverviewPage() {
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-xl border border-border bg-surface/60 p-6"
-          >
-            <div className="flex items-center justify-between">
-              <div className="text-3xl font-semibold">{stat.value}</div>
-              <div className="text-2xl opacity-70">
-                {STAT_ICONS[stat.label]}
+        {stats.map((stat) => {
+          const Icon = STAT_ICONS[stat.label];
+          return (
+            <div
+              key={stat.label}
+              className="rounded-xl border border-border bg-surface/60 p-6"
+            >
+              <div className="flex items-center justify-between">
+                <div className="text-3xl font-semibold">{stat.value}</div>
+                {Icon && <Icon className="h-6 w-6 text-muted" />}
               </div>
+              <div className="mt-1 text-sm text-muted">{stat.label}</div>
             </div>
-            <div className="mt-1 text-sm text-muted">{stat.label}</div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-3">
@@ -173,7 +181,7 @@ export default async function AdminOverviewPage() {
                 href={link.href}
                 className="flex items-center gap-3 rounded-xl border border-border bg-surface/60 p-4 text-sm font-medium transition-colors hover:border-accent/60"
               >
-                <span className="text-lg">{link.icon}</span>
+                <link.icon className="h-5 w-5 text-muted" />
                 {link.label}
               </Link>
             ))}

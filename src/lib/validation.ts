@@ -27,7 +27,11 @@ export const siteSettingSchema = z.object({
 });
 
 export const submissionStatusSchema = z.object({
-  status: z.enum(["NEW", "READ", "ARCHIVED"]),
+  status: z.enum(["NEW", "READ", "REPLIED", "ARCHIVED"]),
+});
+
+export const submissionReplySchema = z.object({
+  message: z.string().trim().min(1).max(5000),
 });
 
 export const createAdminSchema = z.object({

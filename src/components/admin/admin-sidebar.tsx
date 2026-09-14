@@ -4,17 +4,25 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NexusMark } from "@/components/logos";
 import { LogoutButton } from "@/components/admin/logout-button";
+import {
+  ChartIcon,
+  InboxIcon,
+  MegaphoneIcon,
+  SettingsIcon,
+  ShieldIcon,
+  LogIcon,
+} from "@/components/admin/icons";
 
 const NAV = [
-  { href: "/admin", label: "Overview", icon: "📊" },
-  { href: "/admin/submissions", label: "Contact Inbox", icon: "✉️" },
-  { href: "/admin/announcements", label: "Announcements", icon: "📣" },
-  { href: "/admin/settings", label: "Site Settings", icon: "⚙️" },
+  { href: "/admin", label: "Overview", icon: ChartIcon },
+  { href: "/admin/submissions", label: "Contact Inbox", icon: InboxIcon },
+  { href: "/admin/announcements", label: "Announcements", icon: MegaphoneIcon },
+  { href: "/admin/settings", label: "Site Settings", icon: SettingsIcon },
 ];
 
 const SUPERADMIN_NAV = [
-  { href: "/admin/admins", label: "Admins", icon: "🛡️" },
-  { href: "/admin/audit-log", label: "Audit Log", icon: "🗒️" },
+  { href: "/admin/admins", label: "Admins", icon: ShieldIcon },
+  { href: "/admin/audit-log", label: "Audit Log", icon: LogIcon },
 ];
 
 export function AdminSidebar({
@@ -49,7 +57,7 @@ export function AdminSidebar({
                   : "text-muted hover:bg-surface hover:text-foreground"
               }`}
             >
-              <span className="text-base">{item.icon}</span>
+              <item.icon className="h-4 w-4" />
               {item.label}
             </Link>
           );

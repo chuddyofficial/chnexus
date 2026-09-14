@@ -58,6 +58,7 @@ Edit `.env` and set real values:
 - `AUTH_SECRET` — generate with `openssl rand -base64 32`
 - `IP_HASH_SALT` — generate with `openssl rand -hex 16`
 - `NEXTAUTH_URL` — your real domain, e.g. `https://chnexus.net`
+- `RESEND_API_KEY` — from [resend.com](https://resend.com) after verifying your sending domain; required for admin replies in the contact inbox to actually email people (see "Email replies" below)
 
 Start everything:
 
@@ -110,3 +111,21 @@ The first admin account is seeded directly (`npm run db:seed`, or via
 admin accounts (regular `ADMIN` or another `SUPERADMIN`) are created from
 `/admin/admins` by an existing superadmin, who is shown a one-time TOTP QR
 code for the new account.
+
+## Email replies
+
+Opening a submission in `/admin/submissions` and clicking **Reply** sends a
+real email to the person who submitted the contact form, via
+[Resend](https://resend.com):
+
+1. Sign up at resend.com and add `chnexus.net` under **Domains** — it gives
+   you DNS records (MX/TXT/CNAME) to add wherever you manage DNS for the
+   domain. Verification can take a few minutes to a few hours.
+2. Create an API key under **API Keys** (sending access is enough).
+3. Add it to `.env` on the server as `RESEND_API_KEY="re_..."` and restart
+   the app (`docker compose up -d --build app`).
+
+Replies are sent from `support@chnexus.net`. Every reply attempt (success or
+failure) is stored against the submission and shown in its reply thread in
+the admin panel, and logged to the audit log. Without `RESEND_API_KEY` set,
+replying fails with a clear error instead of pretending to send.

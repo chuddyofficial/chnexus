@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { SubmissionRow } from "@/components/admin/submission-row";
 
-type Status = "NEW" | "READ" | "ARCHIVED";
+type Status = "NEW" | "READ" | "REPLIED" | "ARCHIVED";
 
 type Submission = {
   id: string;
@@ -14,7 +14,13 @@ type Submission = {
   createdAt: string;
 };
 
-const STATUS_FILTERS: Array<Status | "ALL"> = ["ALL", "NEW", "READ", "ARCHIVED"];
+const STATUS_FILTERS: Array<Status | "ALL"> = [
+  "ALL",
+  "NEW",
+  "READ",
+  "REPLIED",
+  "ARCHIVED",
+];
 
 export function SubmissionsList({ submissions }: { submissions: Submission[] }) {
   const [query, setQuery] = useState("");

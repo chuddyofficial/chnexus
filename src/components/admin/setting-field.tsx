@@ -81,7 +81,7 @@ export function SettingField({
           disabled={saving}
           className="shrink-0 rounded-md border border-border px-4 py-2 text-sm text-foreground transition-colors hover:border-accent disabled:opacity-60"
         >
-          {saving ? "Saving…" : saved ? "Saved ✓" : "Save"}
+          {saving ? "Saving…" : saved ? "Saved" : "Save"}
         </button>
       </div>
     </form>

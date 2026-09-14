@@ -28,6 +28,7 @@ model AdminUser {
 
   sessions      Session[]
   auditLogs     AuditLog[]
+  replies       SubmissionReply[]
 }
 
 model Session {
@@ -43,6 +44,7 @@ model Session {
 enum SubmissionStatus {
   NEW
   READ
+  REPLIED
   ARCHIVED
 }
 
@@ -55,8 +57,30 @@ model ContactSubmission {
   ipHash    String?
   createdAt DateTime          @default(now())
 
+  replies   SubmissionReply[]
+
   @@index([status])
   @@index([createdAt])
+}
+
+enum ReplyStatus {
+  SENT
+  FAILED
+}
+
+model SubmissionReply {
+  id                  String            @id @default(cuid())
+  submissionId        String
+  submission          ContactSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  adminUserId         String?
+  admin               AdminUser?        @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+  message             String
+  status              ReplyStatus       @default(SENT)
+  resendMessageId     String?
+  errorMessage        String?
+  createdAt           DateTime          @default(now())
+
+  @@index([submissionId])
 }
 
 enum AnnouncementLevel {
@@ -93,6 +117,7 @@ enum AuditAction {
   ANNOUNCEMENT_UPDATED
   ANNOUNCEMENT_DELETED
   SUBMISSION_STATUS_CHANGED
+  SUBMISSION_REPLIED
   ADMIN_CREATED
   ADMIN_DEACTIVATED
   ADMIN_MFA_RESET
