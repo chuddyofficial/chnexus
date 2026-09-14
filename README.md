@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CH Nexus
 
-## Getting Started
+Public website for the CH Nexus ecosystem — links out to **Nexus Services**
+(`services.chnexus.net`), **Nexus Hosting** (`panel.chnexus.net`), and **MABU**
+(the CH Nexus cyber security team) — plus an admin panel for the contact
+inbox, site announcements, and homepage settings.
 
-First, run the development server:
+Stack: Next.js (App Router) + TypeScript + Tailwind, PostgreSQL via Prisma,
+Redis for rate limiting, hand-rolled session auth with TOTP (MFA).
+
+## One-shot VPS setup (recommended)
+
+On a fresh Ubuntu Server 26.04 LTS box, with DNS for your domain already
+pointed at the server's IP:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/chuddyofficial/chnexus.git
+cd chnexus
+chmod +x setup.sh
+sudo ./setup.sh chnexus.net you@example.com
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This single script:
+1. Installs Docker Engine + Compose plugin (if missing)
+2. Installs nginx + certbot (if missing)
+3. Generates `.env` with fresh random secrets (if it doesn't already exist)
+4. Builds and starts the app, Postgres, and Redis containers
+5. Runs Prisma migrations
+6. Seeds the first admin account — prompts for a password, prints a TOTP
+   QR/otpauth URL to scan into an authenticator app immediately (it is not
+   shown again)
+7. Configures nginx as a reverse proxy on the domain
+8. Requests a Let's Encrypt certificate via certbot
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+It's safe to re-run — every step skips itself if already done, so you can
+also use it after a fresh `git pull` to pick up dependency/infra changes.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To just ship new code after that (no infra changes):
 
-## Learn More
+```bash
+git pull
+docker compose up -d --build
+docker compose --profile tools run --rm migrator npx prisma migrate deploy
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Manual setup (if you don't want the script)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Requires Docker and the Docker Compose plugin installed on the server.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+git clone https://github.com/chuddyofficial/chnexus.git
+cd chnexus
+cp .env.example .env
+```
 
-## Deploy on Vercel
+Edit `.env` and set real values:
+- `POSTGRES_PASSWORD` — a strong random value (Compose uses this for both the Postgres container and the app's `DATABASE_URL`)
+- `AUTH_SECRET` — generate with `openssl rand -base64 32`
+- `IP_HASH_SALT` — generate with `openssl rand -hex 16`
+- `NEXTAUTH_URL` — your real domain, e.g. `https://chnexus.net`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Start everything:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+docker compose up -d --build
+```
+
+Run migrations and create the first admin account (via the dedicated
+`migrator` image, which — unlike the slim `app` image — has the full Prisma
+CLI):
+
+```bash
+docker compose --profile tools run --rm migrator npx prisma migrate deploy
+docker compose --profile tools run --rm \
+  -e SEED_ADMIN_EMAIL=you@example.com -e SEED_ADMIN_PASSWORD=changeme \
+  migrator npm run db:seed
+```
+
+Sign in at `/admin/login`. Put this behind a reverse proxy (nginx/Caddy) with
+TLS for the real domain — the app itself only listens on `127.0.0.1:3000`.
+
+## Local development
+
+Needs a local Postgres + Redis. Easiest with Docker:
+
+```bash
+docker compose up -d postgres redis
+```
+
+Then:
+
+```bash
+npm install
+npx prisma migrate dev
+npm run dev
+```
+
+## Admin panel
+
+- `/admin/login` — email + password, then a TOTP code
+- `/admin` — overview stats
+- `/admin/submissions` — contact form inbox
+- `/admin/announcements` — site-wide banner messages
+- `/admin/settings` — override service URLs and the homepage tagline without redeploying
+
+Admin accounts are seeded directly (`npm run db:seed`) — there is no public
+sign-up.

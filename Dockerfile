@@ -30,3 +30,13 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 CMD ["node", "server.js"]
+
+# Full node_modules + Prisma CLI, used only for migrations/seeding
+# (`docker compose run migrator ...`) — never serves traffic.
+FROM base AS migrator
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json package-lock.json prisma.config.ts tsconfig.json ./
+COPY prisma ./prisma
+RUN npx prisma generate
+CMD ["npx", "prisma", "migrate", "deploy"]

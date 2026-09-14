@@ -4,10 +4,10 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: chnexus
-      POSTGRES_PASSWORD: changeme
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
       POSTGRES_DB: chnexus
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - chnexus_postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -20,7 +20,7 @@ services:
     image: redis:7-alpine
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - chnexus_redis_data:/data
     healthcheck:
@@ -37,14 +37,29 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: "postgresql://chnexus:changeme@postgres:5432/chnexus?schema=public"
+      DATABASE_URL: "postgresql://chnexus:${POSTGRES_PASSWORD:-changeme}@postgres:5432/chnexus?schema=public"
       REDIS_URL: "redis://redis:6379"
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     depends_on:
       postgres:
         condition: service_healthy
       redis:
+        condition: service_healthy
+
+  migrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrator
+    profiles:
+      - tools
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: "postgresql://chnexus:${POSTGRES_PASSWORD:-changeme}@postgres:5432/chnexus?schema=public"
+    depends_on:
+      postgres:
         condition: service_healthy
 
 volumes:
